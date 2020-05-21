@@ -2,9 +2,7 @@ package com.example.demo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkRelation;
+import org.springframework.hateoas.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +27,25 @@ public class LinkTest {
     }
 
     @Test
-    @DisplayName("resource 테스트")
-    public void resourceTest() throws Exception {
+    @DisplayName("IANA link relations resource 테스트")
+    public void resourceIANATest() throws Exception {
         Link link = Link.of("/some-resource", IanaLinkRelations.NEXT);
         assertThat(link.getRel()).isEqualTo(LinkRelation.of("next"));
         assertThat(IanaLinkRelations.isIanaRel(link.getRel())).isTrue();
+    }
+
+    @Test
+    @DisplayName("URI 템플릿 사용 테스트")
+    public void uriTemplateTest() {
+        UriTemplate template = UriTemplate.of("/{segment}/something")
+                .with(new TemplateVariable("parameter", TemplateVariable.VariableType.REQUEST_PARAM));
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("segment", "path");
+        values.put("parameter", 42);
+
+        assertThat(template.toString()).isEqualTo("/{segment}/something{?parameter}");
+        assertThat(template.expand(values).toString()).isEqualTo("/path/something?parameter=42");
     }
 
     @Test
